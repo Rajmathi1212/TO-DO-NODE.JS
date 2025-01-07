@@ -46,11 +46,14 @@ const startServer = async () => {
                 </div>`);
     });
     const DB = process.env.DB_URL;
-    console.log(DB, "db");
-    const db = mongoose.connect(DB, {}).then((con) => {
-      console.log(con.connections, db);
-      console.log("connected successfuly");
-    });
+    mongoose
+      .connect(DB)
+      .then(() => {
+        console.log("MongoDB connected successfully");
+      })
+      .catch((error) => {
+        console.error("MongoDB connection error:", error);
+      })
 
 
     app.use('/api/v1/user', userRouter);
@@ -69,3 +72,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+

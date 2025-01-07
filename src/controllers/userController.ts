@@ -1,55 +1,10 @@
 import constants from '../common/constants';
-import express, { Request, Response } from 'express';
-import mongoose, { ConnectOptions } from 'mongoose';
+import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
+import { User } from '../models/userModels';
 dotenv.config();
-
-// MongoDB connection setup
-const DB_URL = process.env.DB_URL as string;
-if (!DB_URL) {
-    throw new Error('DB_URL environment variable is not set');
-}
-
-mongoose.connect(DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    serverSelectionTimeoutMS: 30000,
-} as ConnectOptions)
-    .then(() => console.log('MongoDB connected'))
-    .catch((error) => console.error('MongoDB connection error:', error));
-
-interface IUser extends mongoose.Document {
-    user_id: string;
-    user_name: string;
-    first_name: string;
-    last_name: string;
-    email_address: string;
-    mobile_number: string;
-    password: string;
-    gender: string;
-    is_active: number;
-    updated_on: Date;
-}
-
-const User = mongoose.model<IUser>('User', new mongoose.Schema<IUser>({
-    user_id: { type: String, required: true },
-    user_name: { type: String, required: true },
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: true },
-    email_address: { type: String, required: true },
-    mobile_number: { type: String, required: true },
-    password: { type: String, required: true },
-    gender: { type: String, required: true },
-    is_active: { type: Number, default: 1 },
-    updated_on: { type: Date, default: Date.now },
-}));
-
-const app = express();
-app.use(express.json());
-
 
 //create user endpoint
 export const createUser = async (req: Request, res: Response) => {
@@ -205,6 +160,47 @@ export const updateUser = async (req: Request, res: Response) => {
         });
     }
 };
+
+// Get user By Id
+export const getUserById = async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    // #swagger.summary = 'Get the Users By Id.'
+    // #swagger.description = 'This endpoint is used to get the users by Id.'
+
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({
+                succeed: false,
+                code: 400,
+                status: "Bad Request",
+                message: "User ID is required.",
+            });
+        }
+        const user = await User.findOne({ user_id: userId, is_active: 1 });
+        if (!user) {
+            return res.status(404).json({
+                succeed: false,
+                code: 404,
+                status: "Not Found",
+                message: "User not found or inactive.",
+            });
+        }
+        return res.status(200).json({
+            succeed: true,
+            code: 200,
+            status: "Success",
+            user,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            succeed: false,
+            code: 500,
+            status: "Internal Server Error",
+            message: error instanceof Error ? error.message : "Error retrieving user by ID.",
+        });
+    }
+}
 
 //delete user endpoint
 export const deleteUser = async (req: Request, res: Response) => {

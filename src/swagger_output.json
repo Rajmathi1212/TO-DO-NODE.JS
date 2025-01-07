@@ -5,7 +5,7 @@
     "description": "API Documentation for the To-Do-App.",
     "version": "1.0.0"
   },
-  "host": "localhost:6290",
+  "host": "localhost:2570",
   "basePath": "/",
   "schemes": [
     "http"
@@ -222,26 +222,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/v1/auth/refresh": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Refresh Token",
-        "description": "This endpoint is used to refresh the access token using the refresh token.",
-        "responses": {
-          "200": {
-            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"

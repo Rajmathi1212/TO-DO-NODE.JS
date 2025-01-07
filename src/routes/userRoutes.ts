@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, deleteUser, getAllUser, updateUser } from '../controllers/userController';
+import { createUser, deleteUser, getAllUser, getUserById, updateUser } from '../controllers/userController';
 import rateLimit from 'express-rate-limit';
 
 
@@ -12,6 +12,7 @@ let apiRateLimit = rateLimit({
 
 router.post('/create', apiRateLimit, createUser);
 router.get('/getAll', apiRateLimit, getAllUser);
+router.get('/getById/:userId', apiRateLimit, getUserById);
 router.put('/update', apiRateLimit, updateUser);
 router.delete('/delete/:userId', apiRateLimit, deleteUser);
 
